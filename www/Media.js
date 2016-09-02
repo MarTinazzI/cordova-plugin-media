@@ -1,3 +1,4 @@
+cordova.define("cordova-plugin-media.Media", function(require, exports, module) {
 /*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -139,20 +140,6 @@ Media.prototype.stopRecord = function() {
 };
 
 /**
- * Pause recording audio file.
- */
-Media.prototype.pauseRecord = function() {
-    exec(null, this.errorCallback, "Media", "pauseRecordingAudio", [this.id]);
-};
-
-/**
-* Resume recording audio file.
-*/
-Media.prototype.resumeRecord = function() {
-    exec(null, this.errorCallback, "Media", "resumeRecordingAudio", [this.id]);
-};
-
-/**
  * Release the resources.
  */
 Media.prototype.release = function() {
@@ -167,10 +154,10 @@ Media.prototype.setVolume = function(volume) {
 };
 
 /**
- * Adjust the volume.
+ * Set looping in android
  */
-Media.prototype.setLooping = function(volume) {
-    exec(null, null, "Media", "setLooping", [this.id, volume]);
+Media.prototype.setLoop = function(loop) {
+    exec(null, null, "Media", "setLoop", [this.id, loop]);
 };
 
 /**
@@ -262,3 +249,5 @@ if (cordova.platformId === 'android' || cordova.platformId === 'amazon-fireos' |
         channel.initializationComplete('onMediaPluginReady');
     });
 }
+
+});

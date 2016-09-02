@@ -30,11 +30,11 @@ import android.media.AudioManager;
 import android.media.AudioManager.OnAudioFocusChangeListener;
 import android.net.Uri;
 import android.os.Build;
+import android.util.Log;
 
 import java.security.Permission;
 import java.util.ArrayList;
 
-import org.apache.cordova.LOG;
 import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -118,13 +118,7 @@ public class AudioHandler extends CordovaPlugin {
             promptForRecord();
         }
         else if (action.equals("stopRecordingAudio")) {
-            this.stopRecordingAudio(args.getString(0), true);
-        }
-        else if (action.equals("pauseRecordingAudio")) {
-            this.stopRecordingAudio(args.getString(0), false);
-        }
-        else if (action.equals("resumeRecordingAudio")) {
-            this.resumeRecordingAudio(args.getString(0));
+            this.stopRecordingAudio(args.getString(0));
         }
         else if (action.equals("startPlayingAudio")) {
             String target = args.getString(1);
@@ -136,6 +130,9 @@ public class AudioHandler extends CordovaPlugin {
                 fileUriStr = target;
             }
             this.startPlayingAudio(args.getString(0), FileHelper.stripFileProtocol(fileUriStr));
+        }
+        else if (action.equals("setLoop")) {
+            this.setLoop(args.getString(0), args.getBoolean(1));
         }
         else if (action.equals("seekToAudio")) {
             this.seekToAudio(args.getString(0), args.getInt(1));
@@ -178,9 +175,6 @@ public class AudioHandler extends CordovaPlugin {
             float f = this.getCurrentAmplitudeAudio(args.getString(0));
             callbackContext.sendPluginResult(new PluginResult(status, f));
             return true;
-        }
-        else if (action.equals("setLooping")) {
-            this.setLooping(args.getString(0), args.getBoolean(1));
         }
         else { // Unrecognized action.
             return false;
@@ -291,25 +285,13 @@ public class AudioHandler extends CordovaPlugin {
     }
 
     /**
-     * Stop/Pause recording and save to the file specified when recording started.
+     * Stop recording and save to the file specified when recording started.
      * @param id				The id of the audio player
-     * @param stop      If true stop recording, if false pause recording
      */
-    public void stopRecordingAudio(String id, boolean stop) {
+    public void stopRecordingAudio(String id) {
         AudioPlayer audio = this.players.get(id);
         if (audio != null) {
-            audio.stopRecording(stop);
-        }
-    }
-
-    /**
-     * Resume recording
-     * @param id				The id of the audio player
-     */
-    public void resumeRecordingAudio(String id) {
-        AudioPlayer audio = players.get(id);
-        if (audio != null) {
-            audio.resumeRecording();
+            audio.stopRecording();
         }
     }
 
@@ -389,8 +371,6 @@ public class AudioHandler extends CordovaPlugin {
      */
     @SuppressWarnings("deprecation")
     public void setAudioOutputDevice(int output) {
-        String TAG1 = "AudioHandler.setAudioOutputDevice(): Error : ";
-
         AudioManager audiMgr = (AudioManager) this.cordova.getActivity().getSystemService(Context.AUDIO_SERVICE);
         if (output == 2) {
             audiMgr.setRouting(AudioManager.MODE_NORMAL, AudioManager.ROUTE_SPEAKER, AudioManager.ROUTE_ALL);
@@ -399,7 +379,7 @@ public class AudioHandler extends CordovaPlugin {
             audiMgr.setRouting(AudioManager.MODE_NORMAL, AudioManager.ROUTE_EARPIECE, AudioManager.ROUTE_ALL);
         }
         else {
-             LOG.e(TAG1," Unknown output device");
+            System.out.println("AudioHandler.setAudioOutputDevice() Error: Unknown output device.");
         }
     }
 
@@ -440,15 +420,13 @@ public class AudioHandler extends CordovaPlugin {
         };
 
     public void getAudioFocus() {
-        String TAG2 = "AudioHandler.getAudioFocus(): Error : ";
-
         AudioManager am = (AudioManager) this.cordova.getActivity().getSystemService(Context.AUDIO_SERVICE);
         int result = am.requestAudioFocus(focusChangeListener,
                                           AudioManager.STREAM_MUSIC,
                                           AudioManager.AUDIOFOCUS_GAIN);
 
         if (result != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-            LOG.e(TAG2,result + " instead of " + AudioManager.AUDIOFOCUS_REQUEST_GRANTED);
+            System.out.println("AudioHandler.getAudioFocus() Error: Got " + result + " instead of " + AudioManager.AUDIOFOCUS_REQUEST_GRANTED);
         }
 
     }
@@ -480,26 +458,26 @@ public class AudioHandler extends CordovaPlugin {
      * @param volume            Volume to adjust to 0.0f - 1.0f
      */
     public void setVolume(String id, float volume) {
-        String TAG3 = "AudioHandler.setVolume(): Error : ";
-
         AudioPlayer audio = this.players.get(id);
         if (audio != null) {
             audio.setVolume(volume);
         } else {
-          LOG.e(TAG3,"Unknown Audio Player " + id);
+            System.out.println("AudioHandler.setVolume() Error: Unknown Audio Player " + id);
         }
     }
 
     /**
-     * Set the looping for an audio device
+     * Set the loop for an audio device
      *
      * @param id				The id of the audio player
-     * @param loop
+     * @param loop              Boolean
      */
-    public void setLooping(String id, boolean loop) {
+    public void setLoop(String id, boolean loop) {
         AudioPlayer audio = this.players.get(id);
         if (audio != null) {
-            audio.setLooping(loop);
+            audio.setLoop(loop);
+        } else {
+            System.out.println("AudioHandler.setVolume() Error: Unknown Audio Player " + id);
         }
     }
 
@@ -523,7 +501,7 @@ public class AudioHandler extends CordovaPlugin {
                 message.put(action, actionData);
             }
         } catch (JSONException e) {
-            LOG.e(TAG, "Failed to create event message", e);
+            Log.e(TAG, "Failed to create event message", e);
         }
 
         PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, message);
