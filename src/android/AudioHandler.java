@@ -500,8 +500,6 @@ public class AudioHandler extends CordovaPlugin {
         AudioPlayer audio = this.players.get(id);
         if (audio != null) {
             audio.setLooping(loop);
-        } else {
-          LOG.e(TAG3,"Unknown Audio Player " + id);
         }
     }
 
