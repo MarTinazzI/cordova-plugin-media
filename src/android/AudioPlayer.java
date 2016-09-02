@@ -532,6 +532,20 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
     }
 
     /**
+     * Set the looping for audio player
+     *
+     * @param loop
+     */
+    public void setLooping(boolean loop) {
+        if (this.player != null) {
+            this.player.setLooping(loop);
+        } else {
+            LOG.d(LOG_TAG, "AudioPlayer Error: Cannot set volume until the audio file is initialized.");
+            sendErrorStatus(MEDIA_ERR_NONE_ACTIVE);
+        }
+    }
+
+    /**
      * attempts to put the player in play mode
      * @return true if in playmode, false otherwise
      */

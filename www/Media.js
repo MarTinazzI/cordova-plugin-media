@@ -167,6 +167,13 @@ Media.prototype.setVolume = function(volume) {
 };
 
 /**
+ * Adjust the volume.
+ */
+Media.prototype.setLooping = function(volume) {
+    exec(null, null, "Media", "setLooping", [this.id, volume]);
+};
+
+/**
  * Adjust the playback rate.
  */
 Media.prototype.setRate = function(rate) {

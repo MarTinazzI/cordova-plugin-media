@@ -179,6 +179,9 @@ public class AudioHandler extends CordovaPlugin {
             callbackContext.sendPluginResult(new PluginResult(status, f));
             return true;
         }
+        else if (action.equals("setLooping")) {
+            this.setLooping(args.getString(0), args.getBoolean(1));
+        }
         else { // Unrecognized action.
             return false;
         }
@@ -482,6 +485,21 @@ public class AudioHandler extends CordovaPlugin {
         AudioPlayer audio = this.players.get(id);
         if (audio != null) {
             audio.setVolume(volume);
+        } else {
+          LOG.e(TAG3,"Unknown Audio Player " + id);
+        }
+    }
+
+    /**
+     * Set the looping for an audio device
+     *
+     * @param id				The id of the audio player
+     * @param loop
+     */
+    public void setLooping(String id, boolean loop) {
+        AudioPlayer audio = this.players.get(id);
+        if (audio != null) {
+            audio.setLooping(loop);
         } else {
           LOG.e(TAG3,"Unknown Audio Player " + id);
         }
