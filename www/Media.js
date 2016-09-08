@@ -1,4 +1,3 @@
-cordova.define("cordova-plugin-media.Media", function(require, exports, module) {
 /*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -75,6 +74,13 @@ Media.get = function(id) {
  */
 Media.prototype.play = function(options) {
     exec(null, null, "Media", "startPlayingAudio", [this.id, this.src, options]);
+    if('numberOfLoops' in options){
+        if( options.numberOfLoops != 0){
+            this.setLoop(false);
+        } else {
+            this.setLoop(true);
+        }
+    }
 };
 
 /**
@@ -140,6 +146,20 @@ Media.prototype.stopRecord = function() {
 };
 
 /**
+ * Pause recording audio file.
+ */
+Media.prototype.pauseRecord = function() {
+    exec(null, this.errorCallback, "Media", "pauseRecordingAudio", [this.id]);
+};
+
+/**
+* Resume recording audio file.
+*/
+Media.prototype.resumeRecord = function() {
+    exec(null, this.errorCallback, "Media", "resumeRecordingAudio", [this.id]);
+};
+
+/**
  * Release the resources.
  */
 Media.prototype.release = function() {
@@ -147,17 +167,17 @@ Media.prototype.release = function() {
 };
 
 /**
+ *  Set looping.
+ */
+Media.prototype.setLoop = function(loop) {
+    exec(null, null, "Media", "setLoop", [this.id, loop]);
+};
+
+/**
  * Adjust the volume.
  */
 Media.prototype.setVolume = function(volume) {
     exec(null, null, "Media", "setVolume", [this.id, volume]);
-};
-
-/**
- * Set looping in android
- */
-Media.prototype.setLoop = function(loop) {
-    exec(null, null, "Media", "setLoop", [this.id, loop]);
 };
 
 /**
@@ -249,5 +269,3 @@ if (cordova.platformId === 'android' || cordova.platformId === 'amazon-fireos' |
         channel.initializationComplete('onMediaPluginReady');
     });
 }
-
-});
