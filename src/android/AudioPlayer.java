@@ -524,7 +524,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
      */
     public void setLoop(boolean loop) {
         if (this.player != null) {
-            this.player.setLoopng(loop);
+            this.player.setLooping(loop);
         }
     }
 
