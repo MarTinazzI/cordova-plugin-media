@@ -74,7 +74,7 @@ Media.get = function(id) {
  */
 Media.prototype.play = function(options) {
     exec(null, null, "Media", "startPlayingAudio", [this.id, this.src, options]);
-    if('numberOfLoops' in options){
+    if(!!options && 'numberOfLoops' in options){
         if( options.numberOfLoops != 0){
             this.setLoop(false);
         } else {
